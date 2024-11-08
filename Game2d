@@ -1,0 +1,77 @@
+import pygame
+import random
+
+# Khởi tạo pygame
+pygame.init()
+
+# Định nghĩa các màu sắc
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+# Thiết lập màn hình
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Người Gác Cửa Đêm")
+
+# Thiết lập nhân vật
+player_size = 50
+player_pos = [SCREEN_WIDTH // 2, SCREEN_HEIGHT - 2 * player_size]
+player_speed = 5
+
+# Câu đố đơn giản
+puzzles = ["What is 3 + 5?", "What is 7 - 2?", "What is 2 * 3?"]
+answers = ["8", "5", "6"]
+
+# Biến trạng thái
+running = True
+current_puzzle = None
+puzzle_text = None
+show_puzzle = False
+
+# Phông chữ
+font = pygame.font.SysFont("Arial", 30)
+
+# Hàm hiển thị câu đố
+def show_puzzle_screen():
+    global current_puzzle, puzzle_text
+    current_puzzle = random.choice(list(enumerate(puzzles)))
+    puzzle_text = font.render(current_puzzle[1], True, RED)
+    screen.blit(puzzle_text, (SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2))
+
+# Vòng lặp chính của game
+while running:
+    screen.fill(BLACK)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN and not show_puzzle:
+                # Hiển thị câu đố khi nhấn Enter
+                show_puzzle = True
+                show_puzzle_screen()
+
+    # Di chuyển nhân vật
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and player_pos[0] > 0:
+        player_pos[0] -= player_speed
+    if keys[pygame.K_RIGHT] and player_pos[0] < SCREEN_WIDTH - player_size:
+        player_pos[0] += player_speed
+    if keys[pygame.K_UP] and player_pos[1] > 0:
+        player_pos[1] -= player_speed
+    if keys[pygame.K_DOWN] and player_pos[1] < SCREEN_HEIGHT - player_size:
+        player_pos[1] += player_speed
+
+    # Vẽ nhân vật
+    pygame.draw.rect(screen, WHITE, (player_pos[0], player_pos[1], player_size, player_size))
+
+    # Hiển thị câu đố nếu có
+    if show_puzzle:
+        show_puzzle_screen()
+
+    pygame.display.flip()
+
+# Thoát pygame
+pygame.quit()
